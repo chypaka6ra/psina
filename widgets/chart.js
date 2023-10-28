@@ -395,11 +395,11 @@ export class ChartWidget extends WidgetWithInstrument {
 
   async traderEventChanged(oldValue, newValue) {
     if (typeof newValue === 'object' && newValue?.event === 'reconnect') {
-      await this.loadHistory_1m();
+      await this.loadHistoryM();
     }
   }
 
-  async loadHistory_1m() {
+  async loadHistoryM() {
     if (typeof this.chartTrader.historicalCandles === 'function') {
       this.ready = false;
 
@@ -434,7 +434,7 @@ export class ChartWidget extends WidgetWithInstrument {
         this.instrument &&
         this.instrumentTrader.supportsInstrument(this.instrument)
       ) {
-        await this.loadHistory_1m();
+        await this.loadHistoryM();
       }
 
       await this.chartTrader?.instrumentChanged?.(this, oldValue, newValue);
