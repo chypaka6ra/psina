@@ -1,13 +1,19 @@
 /** @decorator */
 const [
-  { WidgetWithInstrument, 
-    widgetStyles, 
-    widgetDefaultHeaderTemplate,
-    widgetUnsupportedInstrumentTemplate,
-    widgetEmptyStateTemplate
+  { widgetStyles,
+  widgetEmptyStateTemplate,
+  WidgetWithInstrument,
+  widgetDefaultHeaderTemplate,
+  widgetUnsupportedInstrumentTemplate,
+  widgetStackSelectorTemplate
   },
-  { css, html, ref, when, observable, attr  },
-  {validate, invalidate },
+  { html,
+  css,
+  when,
+  ref,
+  observable,
+  attr,
+  Updates },
   { WIDGET_TYPES, TRADER_DATUM },
   { normalize, spacing },
   { createChart, CrosshairMode, LineStyle },
@@ -39,7 +45,6 @@ const [
 ] = await Promise.all([
   import(`${ppp.rootUrl}/elements/widget.js`),
   import(`${ppp.rootUrl}/vendor/fast-element.min.js`),
-  import(`${ppp.rootUrl}/lib/ppp-errors.js`),
   import(`${ppp.rootUrl}/lib/const.js`),
   import(`${ppp.rootUrl}/design/styles.js`),
   import(`${ppp.rootUrl}/lib/ppp-charts.js`),
