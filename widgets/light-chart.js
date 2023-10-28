@@ -1,25 +1,17 @@
 /** @decorator */
-
-import {
-  widgetStyles,
-  widgetEmptyStateTemplate,
-  WidgetWithInstrument,
-  widgetDefaultHeaderTemplate,
-  widgetUnsupportedInstrumentTemplate
-} from '${ppp.rootUrl}/widget.js';
-import {
-  html,
-  css,
-  when,
-  ref,
-  observable,
-  attr
-} from '${ppp.rootUrl}/vendor/fast-element.min.js';
-import { TRADER_DATUM, WIDGET_TYPES } from '${ppp.rootUrl}/lib/const.js';
-import { normalize, spacing } from '${ppp.rootUrl}/design/styles.js';
-import { createChart, CrosshairMode, LineStyle } from '${ppp.rootUrl}/lib/ppp-charts.js';
-import {
-  bodyFont,
+const [
+  { WidgetWithInstrument, 
+    widgetStyles, 
+    widgetDefaultHeaderTemplate,
+    widgetUnsupportedInstrumentTemplate,
+    widgetEmptyStateTemplate
+  },
+  { css, html, ref, when, observable, attr  },
+  {validate, invalidate },
+  { WIDGET_TYPES, TRADER_DATUM },
+  { normalize, spacing },
+  { createChart, CrosshairMode, LineStyle },
+  {bodyFont,
   chartBorderDownColor,
   chartBorderUpColor,
   chartDownColor,
@@ -41,14 +33,25 @@ import {
   paletteWhite,
   darken,
   themeConditional,
-  toColorComponents
-} from '${ppp.rootUrl}/design/design-tokens.js';
-import { formatPriceWithoutCurrency } from '${ppp.rootUrl}/lib/intl.js';
-import { CandleInterval } from '${ppp.rootUrl}/vendor/tinkoff/definitions/market-data.js';
-import '${ppp.rootUrl}/button.js';
-import '${ppp.rootUrl}/query-select.js';
-import '${ppp.rootUrl}/text-field.js';
-import '${ppp.rootUrl}/widget-controls.js';
+  toColorComponents},
+  {formatPriceWithoutCurrency},
+  {CandleInterval}
+] = await Promise.all([
+  import(`${ppp.rootUrl}/elements/widget.js`),
+  import(`${ppp.rootUrl}/vendor/fast-element.min.js`),
+  import(`${ppp.rootUrl}/lib/ppp-errors.js`),
+  import(`${ppp.rootUrl}/lib/const.js`),
+  import(`${ppp.rootUrl}/design/styles.js`),
+  import(`${ppp.rootUrl}/lib/ppp-charts.js`),
+  import(`${ppp.rootUrl}/design/design-tokens.js`),
+  import(`${ppp.rootUrl}/lib/intl.js`),
+  import(`${ppp.rootUrl}/vendor/tinkoff/definitions/market-data.js`),
+  import(`${ppp.rootUrl}/button.js`),
+  import(`${ppp.rootUrl}/query-select.js),
+  import(`${ppp.rootUrl}/text-field.js'),
+  import(`${ppp.rootUrl}/widget-controls.js')
+]);
+
 
 export const lightChartWidgetTemplate = html`
   <template>
