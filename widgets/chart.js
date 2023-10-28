@@ -1,3 +1,5 @@
+/** @decorator */
+
 const [
   { widgetStyles,
   widgetEmptyStateTemplate,
