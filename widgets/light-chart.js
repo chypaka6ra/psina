@@ -6,7 +6,7 @@ import {
   WidgetWithInstrument,
   widgetDefaultHeaderTemplate,
   widgetUnsupportedInstrumentTemplate
-} from '../widget.js';
+} from '${ppp.rootUrl}/widget.js';
 import {
   html,
   css,
@@ -14,10 +14,10 @@ import {
   ref,
   observable,
   attr
-} from '../../vendor/fast-element.min.js';
-import { TRADER_DATUM, WIDGET_TYPES } from '../../lib/const.js';
-import { normalize, spacing } from '../../design/styles.js';
-import { createChart, CrosshairMode, LineStyle } from '../../lib/ppp-charts.js';
+} from '${ppp.rootUrl}/vendor/fast-element.min.js';
+import { TRADER_DATUM, WIDGET_TYPES } from '${ppp.rootUrl}/lib/const.js';
+import { normalize, spacing } from '${ppp.rootUrl}/design/styles.js';
+import { createChart, CrosshairMode, LineStyle } from '${ppp.rootUrl}/lib/ppp-charts.js';
 import {
   bodyFont,
   chartBorderDownColor,
@@ -42,13 +42,13 @@ import {
   darken,
   themeConditional,
   toColorComponents
-} from '../../design/design-tokens.js';
-import { formatPriceWithoutCurrency } from '../../lib/intl.js';
-import { CandleInterval } from '../../vendor/tinkoff/definitions/market-data.js';
-import '../button.js';
-import '../query-select.js';
-import '../text-field.js';
-import '../widget-controls.js';
+} from '${ppp.rootUrl}/design/design-tokens.js';
+import { formatPriceWithoutCurrency } from '${ppp.rootUrl}/lib/intl.js';
+import { CandleInterval } from '${ppp.rootUrl}/vendor/tinkoff/definitions/market-data.js';
+import '${ppp.rootUrl}/button.js';
+import '${ppp.rootUrl}/query-select.js';
+import '${ppp.rootUrl}/text-field.js';
+import '${ppp.rootUrl}/widget-controls.js';
 
 export const lightChartWidgetTemplate = html`
   <template>
