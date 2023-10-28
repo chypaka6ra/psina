@@ -413,7 +413,7 @@ export class LightChartWidget extends WidgetWithInstrument {
         this.setData(
           await this.chartTrader.historicalCandles({
             instrument: this.instrument,
-            interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
+            interval: 'CANDLE_INTERVAL_1_MIN',
             from,
             to
           })
