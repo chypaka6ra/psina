@@ -47,7 +47,7 @@ const [
   import(`${ppp.rootUrl}/lib/intl.js`),
   import(`${ppp.rootUrl}/vendor/tinkoff/definitions/market-data.js`),
   import(`${ppp.rootUrl}/button.js`),
-  import(`${ppp.rootUrl}/query-select.js),
+  import(`${ppp.rootUrl}/query-select.js'),
   import(`${ppp.rootUrl}/text-field.js'),
   import(`${ppp.rootUrl}/widget-controls.js')
 ]);
