@@ -413,7 +413,7 @@ export class ChartWidget extends WidgetWithInstrument {
         this.setData(
           await this.chartTrader.historicalCandles({
             instrument: this.instrument,
-            interval: CandleInterval.CANDLE_INTERVAL_5_MIN,,
+            interval: CandleInterval.CANDLE_INTERVAL_1_MIN,
             from,
             to
           })
