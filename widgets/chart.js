@@ -59,7 +59,7 @@ const [
 ]);
 
 
-export const lightChartWidgetTemplate = html`
+export const ChartWidgetTemplate = html`
   <template>
     <div class="widget-root">
       ${widgetDefaultHeaderTemplate()}
@@ -91,7 +91,7 @@ export const lightChartWidgetTemplate = html`
   </template>
 `;
 
-export const lightChartWidgetStyles = css`
+export const ChartWidgetStyles = css`
   ${normalize()}
   ${widgetStyles()}
   ${spacing()}
@@ -124,7 +124,7 @@ export const lightChartWidgetStyles = css`
   }
 `;
 
-export class LightChartWidget extends WidgetWithInstrument {
+export class ChartWidget extends WidgetWithInstrument {
   chart;
 
   mainSeries;
@@ -413,7 +413,7 @@ export class LightChartWidget extends WidgetWithInstrument {
         this.setData(
           await this.chartTrader.historicalCandles({
             instrument: this.instrument,
-            interval: 'CANDLE_INTERVAL_1_MIN',
+            interval: CandleInterval.CANDLE_INTERVAL_5_MIN,,
             from,
             to
           })
@@ -583,13 +583,13 @@ export async function widgetDefinition() {
   return {
     type: WIDGET_TYPES.LIGHT_CHART,
     collection: 'PPP',
-    title: html`Лёгкий график`,
+    title: html`График 1м`,
     description: html`Виджет
       <span class="positive">Лёгкий график</span> отображает график финансового
       инструмента в минимальной комплектации.`,
-    customElement: LightChartWidget.compose({
-      template: lightChartWidgetTemplate,
-      styles: lightChartWidgetStyles
+    customElement: ChartWidget.compose({
+      template: ChartWidgetTemplate,
+      styles: ChartWidgetStyles
     }).define(),
     defaultWidth: 600,
     minHeight: 120,
