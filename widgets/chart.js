@@ -59,13 +59,14 @@ const [
 ]);
 
 
-export const ChartWidgetTemplate = html`
+export const lightChartWidgetTemplate = html`
   <template>
     <div class="widget-root">
       ${widgetDefaultHeaderTemplate()}
       <div class="widget-body">
+        ${widgetStackSelectorTemplate()}
         ${when(
-          (x) => !x.instrument,
+          (x) => !x.instrument?.symbol,
           html`${html.partial(
             widgetEmptyStateTemplate('Выберите инструмент.')
           )}`
@@ -74,10 +75,8 @@ export const ChartWidgetTemplate = html`
         <div
           class="chart-holder"
           ?hidden="${(x) =>
-            !x.instrument ||
-            (x.instrument &&
-              x.instrumentTrader &&
-              !x.instrumentTrader.supportsInstrument(x.instrument))}"
+            !x.instrument?.symbol ||
+            (x.instrument && x.instrumentTrader && x.unsupportedInstrument)}"
         >
           <div class="chart-holder-inner">
             <div class="toolbar"></div>
@@ -91,7 +90,7 @@ export const ChartWidgetTemplate = html`
   </template>
 `;
 
-export const ChartWidgetStyles = css`
+export const lightChartWidgetStyles = css`
   ${normalize()}
   ${widgetStyles()}
   ${spacing()}
@@ -124,7 +123,7 @@ export const ChartWidgetStyles = css`
   }
 `;
 
-export class ChartWidget extends WidgetWithInstrument {
+export class LightChartWidget extends WidgetWithInstrument {
   chart;
 
   mainSeries;
@@ -285,8 +284,32 @@ export class ChartWidget extends WidgetWithInstrument {
     super.disconnectedCallback();
   }
 
+  resizeChart() {
+    Updates.enqueue(() => {
+      if (this.chart) {
+        const { width, height } = getComputedStyle(this);
+
+        if (this.stackSelector.hasAttribute('hidden')) {
+          this.chart.resize(parseInt(width) - 2, parseInt(height) - 32);
+        } else {
+          this.chart.resize(
+            parseInt(width) - 2,
+            parseInt(height) -
+              32 -
+              parseInt(getComputedStyle(this.stackSelector).height)
+          );
+        }
+      }
+    });
+  }
+
   onResize({ width, height }) {
-    this.chart && this.chart.resize(width - 2, height - 32);
+    this.resizeChart();
+  }
+
+  restack() {
+    super.restack();
+    this.resizeChart();
   }
 
   priceFormatter(price) {
@@ -295,7 +318,7 @@ export class ChartWidget extends WidgetWithInstrument {
 
   async setupChart() {
     this.chart.applyOptions({
-      timeframe: '1',
+      timeframe: '5',
       localization: {
         priceFormatter: this.priceFormatter.bind(this),
         timeFormatter: (t) =>
@@ -317,9 +340,7 @@ export class ChartWidget extends WidgetWithInstrument {
       }
     });
 
-    const { width, height } = getComputedStyle(this);
-
-    this.chart.resize(parseInt(width) - 2, parseInt(height) - 32);
+    this.resizeChart();
 
     this.mainSeries = this.chart.addCandlestickSeries({
       downColor: chartDownColor.$value,
@@ -343,10 +364,7 @@ export class ChartWidget extends WidgetWithInstrument {
       lastValueVisible: false
     });
 
-    if (
-      this.instrument &&
-      this.instrumentTrader.supportsInstrument(this.instrument)
-    ) {
+    if (this.instrument && !this.unsupportedInstrument) {
       try {
         this.mainSeries.applyOptions({
           priceFormat: {
@@ -395,11 +413,11 @@ export class ChartWidget extends WidgetWithInstrument {
 
   async traderEventChanged(oldValue, newValue) {
     if (typeof newValue === 'object' && newValue?.event === 'reconnect') {
-      await this.loadHistoryM();
+      await this.loadHistory();
     }
   }
 
-  async loadHistoryM() {
+  async loadHistory() {
     if (typeof this.chartTrader.historicalCandles === 'function') {
       this.ready = false;
 
@@ -430,11 +448,8 @@ export class ChartWidget extends WidgetWithInstrument {
     super.instrumentChanged(oldValue, newValue);
 
     if (this.chartTrader) {
-      if (
-        this.instrument &&
-        this.instrumentTrader.supportsInstrument(this.instrument)
-      ) {
-        await this.loadHistoryM();
+      if (this.instrument && !this.unsupportedInstrument) {
+        await this.loadHistory();
       }
 
       await this.chartTrader?.instrumentChanged?.(this, oldValue, newValue);
@@ -465,17 +480,13 @@ export class ChartWidget extends WidgetWithInstrument {
   }
 
   printChanged(oldValue, newValue) {
-    if (
-      this.ready &&
-      newValue?.price &&
-      this.chartTrader.getSymbol(this.instrument) === newValue.symbol
-    ) {
+    if (this.ready && newValue?.price) {
       if (newValue.timestamp < Date.now() - 3600 * 1000) {
         return;
       }
 
       // Update the last candle here
-      const time = this.roundTimestampForTimeframe(newValue.timestamp, 1);
+      const time = this.roundTimestampForTimeframe(newValue.timestamp, 5);
 
       if (
         typeof this.lastCandle === 'undefined' ||
@@ -509,7 +520,7 @@ export class ChartWidget extends WidgetWithInstrument {
     if (this.ready && newValue?.close) {
       const roundedTime = this.roundTimestampForTimeframe(
         new Date(newValue.time).valueOf(),
-        1
+        5
       );
 
       if (
@@ -583,13 +594,13 @@ export async function widgetDefinition() {
   return {
     type: WIDGET_TYPES.LIGHT_CHART,
     collection: 'PPP',
-    title: html`График 1м`,
+    title: html`Лёгкий график`,
     description: html`Виджет
       <span class="positive">Лёгкий график</span> отображает график финансового
       инструмента в минимальной комплектации.`,
-    customElement: ChartWidget.compose({
-      template: ChartWidgetTemplate,
-      styles: ChartWidgetStyles
+    customElement: LightChartWidget.compose({
+      template: lightChartWidgetTemplate,
+      styles: lightChartWidgetStyles
     }).define(),
     defaultWidth: 600,
     minHeight: 120,
