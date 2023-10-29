@@ -355,13 +355,13 @@ export class ChartWidget extends WidgetWithInstrument {
       priceFormat: {
         type: 'volume'
       },
-      priceLineVisible: false,
+      priceLineVisible: true,
       priceScaleId: '',
       scaleMargins: {
         top: 0.85,
         bottom: 0
       },
-      lastValueVisible: false
+      lastValueVisible: true
     });
 
     if (this.instrument && !this.unsupportedInstrument) {
