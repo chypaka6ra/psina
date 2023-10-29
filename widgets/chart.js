@@ -318,7 +318,7 @@ export class ChartWidget extends WidgetWithInstrument {
 
   async setupChart() {
     this.chart.applyOptions({
-      timeframe: '5',
+      timeframe: '1',
       localization: {
         priceFormatter: this.priceFormatter.bind(this),
         timeFormatter: (t) =>
