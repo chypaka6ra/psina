@@ -19,10 +19,6 @@ const [
     TRADER_DATUM,
     TRADER_CAPS,
     BROKERS},
-  { priceCurrencySymbol,
-    formatQuantity,
-    formatDate,
-    formatPriceWithoutCurrency },
   { ellipsis, normalize},
   { buy,
     fontSizeWidget,
@@ -45,7 +41,6 @@ const [
   import(`${ppp.rootUrl}/elements/widget.js`),
   import(`${ppp.rootUrl}/vendor/fast-element.min.js`),
   import(`${ppp.rootUrl}/lib/const.js`),
-  import(`${ppp.rootUrl}/lib/intl.js'`),
   import(`${ppp.rootUrl}/design/styles.js`),
   import(`${ppp.rootUrl}/design/design-tokens.js`),
   import(`${ppp.rootUrl}/lib/tmpl.js`),
@@ -58,6 +53,11 @@ const [
   import(`${ppp.rootUrl}/elements/widget-controls.js`)
 ]);
 
+const { priceCurrencySymbol,
+  formatQuantity,
+  formatDate,
+  formatPriceWithoutCurrency  } = await import(
+  `${ppp.rootUrl}/lib/intl.js`)
 export const timeAndSalesWidgetTemplate = html`
   <template>
     <div class="widget-root">
