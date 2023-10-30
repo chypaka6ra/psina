@@ -203,6 +203,38 @@ export async function widgetDefinition() {
           </p>
         </div>
         <div class="control-line flex-start">
+          <ppp-query-select
+            ${ref('tradesTraderId')}
+            deselectable
+            standalone
+            placeholder="Опционально, нажмите для выбора"
+            value="${(x) => x.document.tradesTraderId}"
+            :context="${(x) => x}"
+            :preloaded="${(x) => x.document.tradesTrader ?? ''}"
+            :query="${() => {
+      return (context) => {
+        return context.services
+          .get('mongodb-atlas')
+          .db('ppp')
+          .collection('traders')
+          .find({
+            $and: [
+              {
+                caps: `[%#(await import(ppp.rootUrl + '/lib/const.js')).TRADER_CAPS.CAPS_TIME_AND_SALES%]`
+              },
+              {
+                $or: [
+                  { removed: { $ne: true } },
+                  { _id: `[%#this.document.tradesTraderId ?? ''%]` }
+                ]
+              }
+            ]
+          })
+          .sort({ updatedAt: -1 });
+      };
+    }}"
+            :transform="${() => ppp.decryptDocumentsTransformation()}"
+          ></ppp-query-select>
           <ppp-button
             appearance="default"
             @click="${() => window.open('?page=trader', '_blank').focus()}"
@@ -214,3 +246,4 @@ export async function widgetDefinition() {
     `
   };
 }
+
