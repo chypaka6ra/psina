@@ -1,26 +1,26 @@
 /** @decorator */
 
 const [
-  { widgetStyles,
+  {   widgetStyles,
     widgetEmptyStateTemplate,
     WidgetWithInstrument,
     widgetDefaultHeaderTemplate,
     widgetWithInstrumentBodyTemplate,
     widgetStackSelectorTemplate
   },
-  { html,
+  {   html,
     css,
     when,
     ref,
     repeat,
-    observable,
-    Observable },
+    observable},
   { WIDGET_TYPES, TRADER_DATUM, TRADER_CAPS},
   { priceCurrencySymbol,
     formatQuantity,
     formatDate,
     formatPriceWithoutCurrency },
-  {buy,
+  {ellipsis, normalize},
+  {  buy,
     fontSizeWidget,
     paletteBlack,
     paletteGrayBase,
@@ -41,6 +41,7 @@ const [
   import(`${ppp.rootUrl}/elements/widget.js`),
   import(`${ppp.rootUrl}/vendor/fast-element.min.js`),
   import(`${ppp.rootUrl}/lib/const.js`),
+  import(`${ppp.rootUrl}/lib/intl.js'`),
   import(`${ppp.rootUrl}/design/styles.js`),
   import(`${ppp.rootUrl}/design/design-tokens.js`),
   import(`${ppp.rootUrl}/lib/tmpl.js`),
@@ -52,7 +53,6 @@ const [
   import(`${ppp.rootUrl}/elements/text-field.js`),
   import(`${ppp.rootUrl}/elements/widget-controls.js`)
 ]);
-
 
 
 export const listWidgetTemplate = html`
@@ -100,10 +100,9 @@ export async function widgetDefinition() {
   return {
     type: WIDGET_TYPES.LIST,
     collection: 'PPP',
-    title: html`Список`,
-    description: html`<span class="positive">Список</span> позволяет создавать
-      листинги инструментов и любых других данных, которые можно оформить в
-      таблицу.`,
+    title: html`Индексы`,
+    description: html`<span class="positive">Таблица индексов</span> отображает
+    текущие значения индексов.`,
     customElement: ListWidget.compose({
       template: listWidgetTemplate,
       styles: listWidgetStyles
