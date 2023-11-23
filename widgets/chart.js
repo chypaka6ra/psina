@@ -59,7 +59,7 @@ const [
 ]);
 
 
-export const ChartWidgetTemplate = html`
+export const ChartWidget1mTemplate = html`
   <template>
     <div class="widget-root">
       ${widgetDefaultHeaderTemplate()}
@@ -90,7 +90,7 @@ export const ChartWidgetTemplate = html`
   </template>
 `;
 
-export const ChartWidgetStyles = css`
+export const ChartWidget1mStyles = css`
   ${normalize()}
   ${widgetStyles()}
   ${spacing()}
@@ -123,7 +123,7 @@ export const ChartWidgetStyles = css`
   }
 `;
 
-export class ChartWidget extends WidgetWithInstrument {
+export class ChartWidget1m extends WidgetWithInstrument {
   chart;
 
   mainSeries;
@@ -598,9 +598,9 @@ export async function widgetDefinition() {
     description: html`Виджет
       <span class="positive">Лёгкий график</span> отображает график финансового
       инструмента в минимальной комплектации.`,
-    customElement: ChartWidget.compose({
-      template: ChartWidgetTemplate,
-      styles: ChartWidgetStyles
+    customElement: ChartWidget1m.compose({
+      template: ChartWidget1mTemplate,
+      styles: ChartWidget1mStyles
     }).define(),
     defaultWidth: 600,
     minHeight: 120,
