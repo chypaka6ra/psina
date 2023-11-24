@@ -486,7 +486,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
       }
 
       // Update the last candle here
-      const time = this.roundTimestampForTimeframe(newValue.timestamp, 5);
+      const time = this.roundTimestampForTimeframe(newValue.timestamp, 1);
 
       if (
         typeof this.lastCandle === 'undefined' ||
@@ -520,7 +520,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
     if (this.ready && newValue?.close) {
       const roundedTime = this.roundTimestampForTimeframe(
         new Date(newValue.time).valueOf(),
-        5
+        1
       );
 
       if (
