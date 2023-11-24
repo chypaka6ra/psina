@@ -361,7 +361,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
         top: 0.85,
         bottom: 0
       },
-      lastValueVisible: true
+      lastValueVisible: false
     });
 
     if (this.instrument && !this.unsupportedInstrument) {
