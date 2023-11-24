@@ -703,18 +703,6 @@ export async function widgetDefinition() {
           </ppp-button>
         </div>
       </div>
-    `<div class="widget-settings-section">
-        <div class="widget-settings-label-group">
-          <h5>Тайм Фрейм</h5>
-          <p class="description">
-            ТаймФрейм.
-          </p>
-        </div>
-        <div class="control-line flex-start">
-          <ppp-query-select
-            placeholder="Опционально, нажмите для выбора"
-            value="${(x) => '1m'}"
-        </div>
-      </div>
+    `
   };
 }
