@@ -572,7 +572,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
         const { candles, prev, next } =
           await this.chartTrader.historicalCandles({
             instrument: this.instrument,
-            tf: CandleInterval.CANDLE_INTERVAL_5_MIN
+            tf: CandleInterval.CANDLE_INTERVAL_1_MIN
           });
 
         this.prev = prev;
