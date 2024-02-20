@@ -635,16 +635,14 @@ export class ChartWidget1m extends WidgetWithInstrument {
         typeof this.lastCandle === 'undefined' ||
         this.lastCandle.time < time
       ) {
-        if (typeof volume === 'undefined') {
-          volume =  0;
-        }
+
         this.lastCandle = {
           open: newValue.price,
           high: newValue.price,
           low: newValue.price,
           close: newValue.price,
           time,
-          volume: volume + newValue.volume
+          volume: oldValue.volume + newValue.volume
         };
       } else {
         const { high, low, open, volume } = this.lastCandle;
