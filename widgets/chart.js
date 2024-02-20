@@ -630,6 +630,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
 
       // Update the last candle here.
       const time = this.roundTimestampForTimeframe(newValue.timestamp, 1);
+      let volume = oldValue.volume;
 
       if (
         typeof this.lastCandle === 'undefined' ||
@@ -642,7 +643,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
           low: newValue.price,
           close: newValue.price,
           time,
-          volume: oldValue.volume + newValue.volume
+          volume: volume + newValue.volume
         };
       } else {
         const { high, low, open, volume } = this.lastCandle;
