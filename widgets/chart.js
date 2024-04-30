@@ -655,7 +655,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
           low: Math.min(low, newValue.price),
           close: newValue.price,
           time,
-          volume
+          volume: volume + newValue.volume
         };
       }
     }
