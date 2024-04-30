@@ -63,7 +63,7 @@ const [
 ]);
 
 
-export const ChartWidget1mTemplate = html`
+export const lightChartWidgetTemplate = html`
   <template>
     <div class="widget-root">
       ${widgetDefaultHeaderTemplate()}
@@ -84,7 +84,7 @@ export const ChartWidget1mTemplate = html`
         >
           <div class="chart-holder-inner">
             <div class="toolbar"></div>
-                        <div class="chart">
+            <div class="chart">
               <div
                 class="price-info-holder${(x) =>
                   x.openPrice <= x.closePrice ? ' positive' : ' negative'}"
@@ -128,6 +128,32 @@ export const ChartWidget1mTemplate = html`
                             : ''}
                       </span>
                     </div>
+                    <div class="pair">
+                      <span class="ohlcv">
+                        ${(x) =>
+                          typeof x.absoluteChange === 'number' && x?.instrument
+                            ? formatAmount(x.absoluteChange, x.instrument, {
+                                signDisplay: 'always',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: Math.max(
+                                  2,
+                                  getInstrumentPrecision(
+                                    x.instrument,
+                                    x.absoluteChange
+                                  )
+                                )
+                              })
+                            : ''}
+                      </span>
+                    </div>
+                    <div class="pair">
+                      <span class="ohlcv">
+                        ${(x) =>
+                          typeof x.relativeChange === 'number'
+                            ? formatRelativeChange(x.relativeChange)
+                            : ''}
+                      </span>
+                    </div>
                   </div>
                   <div class="ohlcv-line">
                     <div class="pair volume">
@@ -145,14 +171,14 @@ export const ChartWidget1mTemplate = html`
             </div>
           </div>
         </div>
-        <ppp-widget-notifications-area></ppp-widget-notifications-area>
       </div>
+      <ppp-widget-notifications-area></ppp-widget-notifications-area>
       <ppp-widget-resize-controls></ppp-widget-resize-controls>
     </div>
   </template>
 `;
 
-export const ChartWidget1mStyles = css`
+export const lightChartWidgetStyles = css`
   ${normalize()}
   ${widgetStyles()}
   ${spacing()}
@@ -183,7 +209,8 @@ export const ChartWidget1mStyles = css`
     border-top: 1px solid
       ${themeConditional(darken(paletteGrayLight3, 5), paletteGrayDark1)};
   }
- .price-info-holder {
+
+  .price-info-holder {
     position: absolute;
     margin: 2px 10px;
     left: 0;
@@ -191,39 +218,46 @@ export const ChartWidget1mStyles = css`
     z-index: 2;
     pointer-events: none;
   }
+
   .price-info-holder-stack {
     display: flex;
     flex-direction: column;
     gap: 4px 0;
   }
+
   .ohlcv-line {
     display: flex;
     flex-direction: row;
     gap: 0 8px;
   }
+
   .ohlcv-line .pair {
     display: flex;
     flex-direction: row;
     gap: 0;
   }
+
   .ohlcv-line .pair.volume {
     gap: 0 8px;
   }
+
   .ohlcv-line span {
     font-size: ${fontSizeWidget};
     line-height: ${lineHeightWidget};
     font-weight: ${fontWeightWidget};
     color: ${themeConditional(paletteGrayBase, paletteGrayLight1)};
   }
+
   .price-info-holder.positive .ohlcv {
     color: ${positive};
   }
+
   .price-info-holder.negative .ohlcv {
     color: ${negative};
   }
 `;
 
-export class ChartWidget1m extends WidgetWithInstrument {
+export class LightChartWidget extends WidgetWithInstrument {
   chart;
 
   mainSeries;
@@ -274,6 +308,12 @@ export class ChartWidget1m extends WidgetWithInstrument {
   volume;
 
   @observable
+  absoluteChange;
+
+  @observable
+  relativeChange;
+
+  @observable
   shouldShowPriceInfo;
 
   css(dt) {
@@ -287,6 +327,8 @@ export class ChartWidget1m extends WidgetWithInstrument {
   async connectedCallback() {
     this.ready = false;
     this.onCrosshairMove = this.onCrosshairMove.bind(this);
+    this.onVisibleLogicalRangeChanged =
+      this.onVisibleLogicalRangeChanged.bind(this);
 
     super.connectedCallback();
 
@@ -387,7 +429,15 @@ export class ChartWidget1m extends WidgetWithInstrument {
   }
 
   async disconnectedCallback() {
-    this.chart.unsubscribeCrosshairMove(this.onCrosshairMove);
+    if (this.chart) {
+      this.chart.unsubscribeCrosshairMove(this.onCrosshairMove);
+      this.chart
+        .timeScale()
+        .unsubscribeVisibleLogicalRangeChange(
+          this.onVisibleLogicalRangeChanged
+        );
+    }
+
     if (this.chartTrader) {
       await this.chartTrader.unsubscribeFields?.({
         source: this,
@@ -442,7 +492,15 @@ export class ChartWidget1m extends WidgetWithInstrument {
     return formatPriceWithoutCurrency(price, this.instrument);
   }
 
-   onCrosshairMove(param) {
+  onVisibleLogicalRangeChanged(newRange) {
+    const info = this.mainSeries.barsInLogicalRange(newRange);
+
+    if (info !== null && info.barsBefore < 50) {
+      // TODO.
+    }
+  }
+
+  onCrosshairMove(param) {
     if (param.time) {
       this.shouldShowPriceInfo = true;
 
@@ -455,6 +513,8 @@ export class ChartWidget1m extends WidgetWithInstrument {
         this.lowPrice = candle.low;
         this.closePrice = candle.close;
         this.volume = volume;
+        this.absoluteChange = candle.close - candle.open;
+        this.relativeChange = (candle.close - candle.open) / candle.open;
       }
     } else {
       this.shouldShowPriceInfo = false;
@@ -463,7 +523,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
 
   async setupChart() {
     this.chart.applyOptions({
-      timeframe: '1',
+      timeframe: '5',
       localization: {
         priceFormatter: this.priceFormatter.bind(this),
         timeFormatter: (t) =>
@@ -486,7 +546,9 @@ export class ChartWidget1m extends WidgetWithInstrument {
     });
 
     this.chart.subscribeCrosshairMove(this.onCrosshairMove);
-    
+    this.chart
+      .timeScale()
+      .subscribeVisibleLogicalRangeChange(this.onVisibleLogicalRangeChanged);
     this.resizeChart();
 
     this.mainSeries = this.chart.addCandlestickSeries({
@@ -502,7 +564,7 @@ export class ChartWidget1m extends WidgetWithInstrument {
       priceFormat: {
         type: 'volume'
       },
-      priceLineVisible: true,
+      priceLineVisible: false,
       priceScaleId: '',
       scaleMargins: {
         top: 0.85,
@@ -591,12 +653,9 @@ export class ChartWidget1m extends WidgetWithInstrument {
     super.instrumentChanged(oldValue, newValue);
 
     if (this.chartTrader) {
-      if (this.instrument && !this.unsupportedInstrument) {
+      if (this.instrument?.symbol) {
         await this.loadHistory();
       }
-
-      await this.chartTrader?.instrumentChanged?.(this, oldValue, newValue);
-      await this.tradesTrader?.instrumentChanged?.(this, oldValue, newValue);
     }
   }
 
@@ -630,25 +689,22 @@ export class ChartWidget1m extends WidgetWithInstrument {
 
       // Update the last candle here.
       const time = this.roundTimestampForTimeframe(newValue.timestamp, 1);
-      let volume = oldValue.volume;
 
       if (
         typeof this.lastCandle === 'undefined' ||
         this.lastCandle.time < time
       ) {
-
         this.lastCandle = {
           open: newValue.price,
           high: newValue.price,
           low: newValue.price,
           close: newValue.price,
           time,
-          volume: volume + newValue.volume
+          volume: newValue.volume
         };
       } else {
         const { high, low, open, volume } = this.lastCandle;
 
-        // Do not touch volume here
         this.lastCandle = {
           open,
           high: Math.max(high, newValue.price),
@@ -739,17 +795,18 @@ export async function widgetDefinition() {
   return {
     type: WIDGET_TYPES.LIGHT_CHART,
     collection: 'PPP',
-    title: html`График`,
+    title: html`Лёгкий график 1m`,
     description: html`Виджет
       <span class="positive">Лёгкий график</span> отображает график финансового
       инструмента в минимальной комплектации.`,
-    customElement: ChartWidget1m.compose({
-      template: ChartWidget1mTemplate,
-      styles: ChartWidget1mStyles
+    customElement: LightChartWidget.compose({
+      template: lightChartWidgetTemplate,
+      styles: lightChartWidgetStyles
     }).define(),
     defaultWidth: 600,
     minHeight: 120,
     minWidth: 140,
+    defaultHeight: 350,
     settings: html`
       <div class="widget-settings-section">
         <div class="widget-settings-label-group">
